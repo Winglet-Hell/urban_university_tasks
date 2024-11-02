@@ -1,3 +1,6 @@
+from random import choice
+
+
 # Lambda-функция для сравнения символов двух строк на совпадение
 first = "Мама мыла раму"
 second = "Рамена мало было"
@@ -23,7 +26,6 @@ write = get_advanced_writer("example.txt")
 write("Это строчка", ["А", "это", "уже", "число", 5, "в", "списке"])
 
 # Класс MysticBall с методом __call__, выбирающий случайное слово
-from random import choice
 
 
 class MysticBall:
