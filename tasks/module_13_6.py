@@ -1,12 +1,19 @@
 import asyncio
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, Message
+from aiogram.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    Message,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    CallbackQuery,
+)
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 
-# Бот токен
+# Замените на ваш токен
 BOT_TOKEN = "8170140420:AAHHaGBCjK22oQNtz515IWXrmvQg6re-X-Q"
 
 # Инициализация бота и диспетчера
@@ -23,10 +30,21 @@ class UserState(StatesGroup):
     gender = State()
 
 
-# Создание клавиатуры
+# Создание клавиатур
 keyboard = ReplyKeyboardMarkup(
     keyboard=[[KeyboardButton(text="Рассчитать"), KeyboardButton(text="Информация")]],
     resize_keyboard=True,
+)
+
+inline_keyboard = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="Рассчитать норму калорий", callback_data="calories"
+            )
+        ],
+        [InlineKeyboardButton(text="Формулы расчёта", callback_data="formulas")],
+    ]
 )
 
 
@@ -38,9 +56,27 @@ async def start_command(message: Message):
 
 # Обработчик кнопки "Рассчитать"
 @dp.message(F.text == "Рассчитать")
-async def set_gender(message: Message, state: FSMContext):
-    await message.answer("Введите ваш пол (м/ж):")
+async def main_menu(message: Message):
+    await message.answer("Выберите опцию:", reply_markup=inline_keyboard)
+
+
+# Обработчик кнопки "Формулы расчёта"
+@dp.callback_query(F.data == "formulas")
+async def get_formulas(call: CallbackQuery):
+    await call.message.answer(
+        "Формула Миффлина - Сан Жеора:\n"
+        "Для мужчин: 10 * вес + 6.25 * рост - 5 * возраст + 5\n"
+        "Для женщин: 10 * вес + 6.25 * рост - 5 * возраст - 161"
+    )
+    await call.answer()
+
+
+# Обработчик кнопки "Рассчитать норму калорий"
+@dp.callback_query(F.data == "calories")
+async def set_gender(call: CallbackQuery, state: FSMContext):
+    await call.message.answer("Введите ваш пол (м/ж):")
     await state.set_state(UserState.gender)
+    await call.answer()
 
 
 # Обработчик ввода пола
