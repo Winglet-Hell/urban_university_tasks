@@ -14,14 +14,12 @@ dp = Dispatcher()
 # Обработчик команды /start
 @dp.message(Command("start"))
 async def start(message: Message):
-    print("Привет! Я бот помогающий твоему здоровью.")
-    await message.reply("Привет! Я бот помогающий твоему здоровью.")
+    await message.reply("Привет! Я бот, помогающий твоему здоровью.")
 
 
 # Обработчик всех остальных сообщений
 @dp.message()
 async def all_messages(message: Message):
-    print("Введите команду /start, чтобы начать общение.")
     await message.reply("Введите команду /start, чтобы начать общение.")
 
 
