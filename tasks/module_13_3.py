@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.filters import Command
 import asyncio
 
-# Токен вашего бота
+# Токен бота
 API_TOKEN = "8170140420:AAHHaGBCjK22oQNtz515IWXrmvQg6re-X-Q"
 
 # Инициализация бота и диспетчера
