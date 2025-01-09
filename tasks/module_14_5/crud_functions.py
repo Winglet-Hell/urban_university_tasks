@@ -41,7 +41,7 @@ def initiate_db():
     if cursor.fetchone()[0] == 0:
         cursor.executemany(
             """
-            INSERT INTO Products (title, description, price, image) 
+            INSERT INTO Products (title, description, price, image)
             VALUES (?, ?, ?, ?)
             """,
             [
@@ -100,7 +100,7 @@ def add_user(username, email, age):
 
     cursor.execute(
         """
-        INSERT INTO Users (username, email, age, balance) 
+        INSERT INTO Users (username, email, age, balance)
         VALUES (?, ?, ?, ?)
         """,
         (username, email, age, 1000),
