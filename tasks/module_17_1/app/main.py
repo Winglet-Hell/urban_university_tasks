@@ -1,14 +1,14 @@
 from fastapi import FastAPI
-from app.routers.task import router as task_router
-from app.routers.user import router as user_router
+from app.routers import task, user
 
 app = FastAPI()
 
+# Подключение маршрутов
+app.include_router(task.router)
+app.include_router(user.router)
 
+
+# Маршрут для главной страницы
 @app.get("/")
 async def root():
     return {"message": "Welcome to Taskmanager"}
-
-
-app.include_router(task_router)
-app.include_router(user_router)
