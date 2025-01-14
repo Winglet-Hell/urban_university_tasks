@@ -1,5 +1,5 @@
 import asyncio
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -24,21 +24,31 @@ class UserState(StatesGroup):
 
 # Обработчик команды /start
 @dp.message(Command("start"))
-async def start_command(message: Message, state: FSMContext):
+async def start_command(message: Message):
+    await message.answer("Привет! Я бот, помогающий твоему здоровью.")
+
+
+# Обработчик текстового сообщения 'Calories'
+@dp.message(F.text.casefold() == "calories")  # Используем магический фильтр
+async def calories_command(message: Message, state: FSMContext):
     await message.answer("Введите ваш возраст:")
     await state.set_state(UserState.age)
 
 
 # Обработчик ввода возраста
-@dp.message(UserState.age)
+@dp.message(UserState.age)  # Фильтр по состоянию
 async def set_age(message: Message, state: FSMContext):
     try:
         age = int(message.text)
+        if age <= 0:
+            raise ValueError
         await state.update_data(age=age)
         await message.answer("Введите ваш рост в см:")
         await state.set_state(UserState.growth)
     except ValueError:
-        await message.answer("Пожалуйста, введите корректный возраст (число).")
+        await message.answer(
+            "Пожалуйста, введите корректный возраст (положительное число)."
+        )
 
 
 # Обработчик ввода роста
@@ -46,11 +56,15 @@ async def set_age(message: Message, state: FSMContext):
 async def set_growth(message: Message, state: FSMContext):
     try:
         growth = int(message.text)
+        if growth <= 0:
+            raise ValueError
         await state.update_data(growth=growth)
         await message.answer("Введите ваш вес в кг:")
         await state.set_state(UserState.weight)
     except ValueError:
-        await message.answer("Пожалуйста, введите корректный рост (число).")
+        await message.answer(
+            "Пожалуйста, введите корректный рост (положительное число)."
+        )
 
 
 # Обработчик ввода веса
@@ -58,6 +72,8 @@ async def set_growth(message: Message, state: FSMContext):
 async def set_weight(message: Message, state: FSMContext):
     try:
         weight = int(message.text)
+        if weight <= 0:
+            raise ValueError
         await state.update_data(weight=weight)
 
         # Получение всех данных
@@ -73,7 +89,15 @@ async def set_weight(message: Message, state: FSMContext):
         await message.answer(f"Ваша норма калорий: {calories:.2f} ккал.")
         await state.clear()
     except ValueError:
-        await message.answer("Пожалуйста, введите корректный вес (число).")
+        await message.answer(
+            "Пожалуйста, введите корректный вес (положительное число)."
+        )
+
+
+# Обработчик всех других сообщений
+@dp.message()
+async def all_messages(message: Message):
+    await message.answer("Введите команду /start, чтобы начать общение.")
 
 
 # Запуск бота
